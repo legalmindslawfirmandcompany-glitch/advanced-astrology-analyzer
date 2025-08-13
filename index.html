@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Astrology Analyzer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 p-4 sm:p-8 md:p-12 min-h-screen">
+
+    <div class="max-w-4xl mx-auto bg-gray-800 rounded-2xl shadow-xl p-6 sm:p-10">
+        <h1 class="text-4xl font-bold text-center text-teal-300 mb-6">Advanced Astrology Analyzer</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <div class="bg-gray-700 p-6 rounded-xl shadow-inner">
+                <h2 class="text-2xl font-semibold mb-4 text-center">Person 1</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label for="p1-name" class="block text-sm font-medium text-gray-400">Name</label>
+                        <input type="text" id="p1-name" class="mt-1 block w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm" placeholder="Enter name">
+                    </div>
+                    <div>
+                        <label for="p1-dob" class="block text-sm font-medium text-gray-400">Date of Birth</label>
+                        <input type="date" id="p1-dob" class="mt-1 block w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm">
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gray-700 p-6 rounded-xl shadow-inner">
+                <h2 class="text-2xl font-semibold mb-4 text-center">Person 2 (for Compatibility)</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label for="p2-name" class="block text-sm font-medium text-gray-400">Name</label>
+                        <input type="text" id="p2-name" class="mt-1 block w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm" placeholder="Enter name">
+                    </div>
+                    <div>
+                        <label for="p2-dob" class="block text-sm font-medium text-gray-400">Date of Birth</label>
+                        <input type="date" id="p2-dob" class="mt-1 block w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex justify-center">
+            <button id="analyze-btn" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
+                Analyze Astrology
+            </button>
+        </div>
+
+        <div id="results" class="mt-8 bg-gray-700 p-6 rounded-xl shadow-inner hidden">
+            <h2 class="text-3xl font-semibold text-center mb-6">Analysis Results</h2>
+            <div id="p1-result" class="mb-8"></div>
+            <div id="p2-result" class="mb-8 hidden"></div>
+            <div id="compatibility-result" class="mt-8 p-6 bg-gray-800 rounded-xl shadow-md border border-gray-600 hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        // Data for all zodiac signs with detailed information
+        const zodiacSigns = {
+            'aries': {
+                name: 'Aries',
+                dates: 'Mar 21 - Apr 19',
+                element: 'Fire',
+                quality: 'Cardinal',
+                rulingPlanet: 'Mars',
+                birthstone: 'Diamond',
+                luckyColor: 'Red',
+                luckyNumber: 9,
+                luckyDay: 'Tuesday',
+                luckyTime: '02:00 PM - 04:00 PM'
+            },
+            'taurus': {
+                name: 'Taurus',
+                dates: 'Apr 20 - May 20',
+                element: 'Earth',
+                quality: 'Fixed',
+                rulingPlanet: 'Venus',
+                birthstone: 'Emerald',
+                luckyColor: 'Green, Pink',
+                luckyNumber: 6,
+                luckyDay: 'Friday',
+                luckyTime: '05:00 AM - 07:00 AM'
+            },
+            'gemini': {
+                name: 'Gemini',
+                dates: 'May 21 - Jun 20',
+                element: 'Air',
+                quality: 'Mutable',
+                rulingPlanet: 'Mercury',
+                birthstone: 'Pearl, Alexandrite',
+                luckyColor: 'Yellow, Light Blue',
+                luckyNumber: 5,
+                luckyDay: 'Wednesday',
+                luckyTime: '10:00 AM - 12:00 PM'
+            },
+            'cancer': {
+                name: 'Cancer',
+                dates: 'Jun 21 - Jul 22',
+                element: 'Water',
+                quality: 'Cardinal',
+                rulingPlanet: 'Moon',
+                birthstone: 'Ruby',
+                luckyColor: 'White, Silver',
+                luckyNumber: 2,
+                luckyDay: 'Monday',
+                luckyTime: '07:00 PM - 09:00 PM'
+            },
+            'leo': {
+                name: 'Leo',
+                dates: 'Jul 23 - Aug 22',
+                element: 'Fire',
+                quality: 'Fixed',
+                rulingPlanet: 'Sun',
+                birthstone: 'Peridot',
+                luckyColor: 'Gold, Orange',
+                luckyNumber: 1,
+                luckyDay: 'Sunday',
+                luckyTime: '11:00 AM - 01:00 PM'
+            },
+            'virgo': {
+                name: 'Virgo',
+                dates: 'Aug 23 - Sep 22',
+                element: 'Earth',
+                quality: 'Mutable',
+                rulingPlanet: 'Mercury',
+                birthstone: 'Sapphire',
+                luckyColor: 'Grey, Beige',
+                luckyNumber: 5,
+                luckyDay: 'Wednesday',
+                luckyTime: '09:00 AM - 11:00 AM'
+            },
+            'libra': {
+                name: 'Libra',
+                dates: 'Sep 23 - Oct 22',
+                element: 'Air',
+                quality: 'Cardinal',
+                rulingPlanet: 'Venus',
+                birthstone: 'Opal, Tourmaline',
+                luckyColor: 'Pink, Green',
+                luckyNumber: 6,
+                luckyDay: 'Friday',
+                luckyTime: '06:00 PM - 08:00 PM'
+            },
+            'scorpio': {
+                name: 'Scorpio',
+                dates: 'Oct 23 - Nov 21',
+                element: 'Water',
+                quality: 'Fixed',
+                rulingPlanet: 'Pluto, Mars',
+                birthstone: 'Topaz, Citrine',
+                luckyColor: 'Black, Red',
+                luckyNumber: 8,
+                luckyDay: 'Tuesday',
+                luckyTime: '01:00 PM - 03:00 PM'
+            },
+            'sagittarius': {
+                name: 'Sagittarius',
+                dates: 'Nov 22 - Dec 21',
+                element: 'Fire',
+                quality: 'Mutable',
+                rulingPlanet: 'Jupiter',
+                birthstone: 'Turquoise',
+                luckyColor: 'Purple, Blue',
+                luckyNumber: 3,
+                luckyDay: 'Thursday',
+                luckyTime: '04:00 PM - 06:00 PM'
+            },
+            'capricorn': {
+                name: 'Capricorn',
+                dates: 'Dec 22 - Jan 19',
+                element: 'Earth',
+                quality: 'Cardinal',
+                rulingPlanet: 'Saturn',
+                birthstone: 'Garnet',
+                luckyColor: 'Brown, Black',
+                luckyNumber: 8,
+                luckyDay: 'Saturday',
+                luckyTime: '09:00 PM - 11:00 PM'
+            },
+            'aquarius': {
+                name: 'Aquarius',
+                dates: 'Jan 20 - Feb 18',
+                element: 'Air',
+                quality: 'Fixed',
+                rulingPlanet: 'Uranus, Saturn',
+                birthstone: 'Amethyst',
+                luckyColor: 'Blue, Violet',
+                luckyNumber: 4,
+                luckyDay: 'Saturday',
+                luckyTime: '03:00 PM - 05:00 PM'
+            },
+            'pisces': {
+                name: 'Pisces',
+                dates: 'Feb 19 - Mar 20',
+                element: 'Water',
+                quality: 'Mutable',
+                rulingPlanet: 'Neptune, Jupiter',
+                birthstone: 'Aquamarine',
+                luckyColor: 'Sea Green, Blue',
+                luckyNumber: 7,
+                luckyDay: 'Thursday',
+                luckyTime: '12:00 AM - 02:00 AM'
+            }
+        };
+
+        // Function to determine zodiac sign from a date
+        function getZodiacSign(date) {
+            const day = date.getDate();
+            const month = date.getMonth() + 1; // getMonth() is 0-indexed
+
+            if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return zodiacSigns['aries'];
+            if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return zodiacSigns['taurus'];
+            if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) return zodiacSigns['gemini'];
+            if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) return zodiacSigns['cancer'];
+            if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) return zodiacSigns['leo'];
+            if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) return zodiacSigns['virgo'];
+            if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) return zodiacSigns['libra'];
+            if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) return zodiacSigns['scorpio'];
+            if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return zodiacSigns['sagittarius'];
+            if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return zodiacSigns['capricorn'];
+            if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return zodiacSigns['aquarius'];
+            if ((month === 2 && day >= 19) || (month === 3 && day <= 20)) return zodiacSigns['pisces'];
+
+            return null; // Should not happen with valid dates
+        }
+
+        // Function to render an individual's astrology profile
+        function renderIndividualProfile(name, sign, elementId) {
+            const container = document.getElementById(elementId);
+            if (!sign) {
+                container.innerHTML = `<p class="text-red-400">Invalid date of birth for ${name}.</p>`;
+                return;
+            }
+
+            container.innerHTML = `
+                <h3 class="text-2xl font-bold text-teal-300">${name}'s Profile: <span class="text-white">${sign.name}</span></h3>
+                <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+                    <div class="bg-gray-900 p-4 rounded-lg"><span class="text-gray-400 font-semibold">Dates:</span> ${sign.dates}</div>
+                    <div class="bg-gray-900 p-4 rounded-lg"><span class="text-gray-400 font-semibold">Element:</span> ${sign.element}</div>
+                    <div class="bg-gray-900 p-4 rounded-lg"><span class="text-gray-400 font-semibold">Quality:</span> ${sign.quality}</div>
+                    <div class="bg-gray-900 p-4 rounded-lg"><span class="text-gray-400 font-semibold">Ruling Planet:</span> ${sign.rulingPlanet}</div>
+                    <div class="bg-gray-900 p-4 rounded-lg"><span class="text-gray-400 font-semibold">Birthstone:</span> ${sign.birthstone}</div>
+                    <div class="bg-gray-900 p-4 rounded-lg"><span class="text-gray-400 font-semibold">Lucky Color:</span> ${sign.luckyColor}</div>
+                    <div class="bg-gray-900 p-4 rounded-lg"><span class="text-gray-400 font-semibold">Lucky Number:</span> ${sign.luckyNumber}</div>
+                    <div class="bg-gray-900 p-4 rounded-lg"><span class="text-gray-400 font-semibold">Lucky Day:</span> ${sign.luckyDay}</div>
+                    <div class="bg-gray-900 p-4 rounded-lg"><span class="text-gray-400 font-semibold">Lucky Time:</span> ${sign.luckyTime}</div>
+                </div>
+            `;
+            container.classList.remove('hidden');
+        }
+
+        // Function to calculate and render compatibility
+        function calculateCompatibility(p1, p2) {
+            const compatibilityContainer = document.getElementById('compatibility-result');
+            const p1Sign = p1.sign;
+            const p2Sign = p2.sign;
+
+            // Element Compatibility
+            let elementResult;
+            if (p1Sign.element === p2Sign.element) {
+                elementResult = `Both ${p1Sign.name} and ${p2Sign.name} are ${p1Sign.element} signs, which indicates a strong, natural understanding. You share a similar approach to life.`;
+            } else if ((p1Sign.element === 'Fire' && p2Sign.element === 'Air') || (p1Sign.element === 'Air' && p2Sign.element === 'Fire')) {
+                elementResult = `${p1Sign.name} (Fire) and ${p2Sign.name} (Air) have a dynamic connection. Air fuels Fire, creating a stimulating and energetic relationship.`;
+            } else if ((p1Sign.element === 'Earth' && p2Sign.element === 'Water') || (p1Sign.element === 'Water' && p2Sign.element === 'Earth')) {
+                elementResult = `${p1Sign.name} (Earth) and ${p2Sign.name} (Water) are highly compatible. Earth provides stability for Water's emotions, and Water nourishes Earth's practicality.`;
+            } else {
+                elementResult = `${p1Sign.name} (${p1Sign.element}) and ${p2Sign.name} (${p2Sign.element}) have a more challenging but potentially rewarding elemental connection. This may require effort to find common ground.`;
+            }
+
+            // Quality Compatibility
+            let qualityResult;
+            if (p1Sign.quality === p2Sign.quality) {
+                qualityResult = `Both ${p1Sign.name} and ${p2Sign.name} are ${p1Sign.quality} signs. This means you approach things in a similar way, but it could lead to friction if you both try to lead (Cardinal), resist change (Fixed), or become indecisive (Mutable).`;
+            } else if ((p1Sign.quality === 'Cardinal' && p2Sign.quality === 'Fixed') || (p1Sign.quality === 'Fixed' && p2Sign.quality === 'Cardinal')) {
+                qualityResult = `${p1Sign.name} (Cardinal) and ${p2Sign.name} (Fixed) can complement each other. The Cardinal sign initiates projects while the Fixed sign sees them through to completion.`;
+            } else if ((p1Sign.quality === 'Cardinal' && p2Sign.quality === 'Mutable') || (p1Sign.quality === 'Mutable' && p2Sign.quality === 'Cardinal')) {
+                qualityResult = `${p1Sign.name} (Cardinal) and ${p2Sign.name} (Mutable) have a flexible and creative connection. The Cardinal sign starts things, and the Mutable sign adapts and refines the ideas.`;
+            } else if ((p1Sign.quality === 'Fixed' && p2Sign.quality === 'Mutable') || (p1Sign.quality === 'Mutable' && p2Sign.quality === 'Fixed')) {
+                qualityResult = `${p1Sign.name} (Fixed) and ${p2Sign.name} (Mutable) can find balance. The Fixed sign provides a steady foundation for the Mutable sign's flexible nature.`;
+            } else {
+                qualityResult = `This is a unique combination of qualities. The relationship will be defined by how you learn to balance each other's strengths and weaknesses.`;
+            }
+
+            // Ruling Planet Interpretation (Simplified)
+            const rulingPlanetResult = `Your signs are ruled by ${p1Sign.rulingPlanet} and ${p2Sign.rulingPlanet}. The interaction between these planets will influence your shared drives, values, and emotional dynamics.`;
+
+            compatibilityContainer.innerHTML = `
+                <h3 class="text-2xl font-bold text-teal-300 text-center mb-4">Compatibility Report for ${p1.name} & ${p2.name}</h3>
+                <div class="space-y-4">
+                    <div class="p-4 bg-gray-900 rounded-lg">
+                        <h4 class="font-semibold text-gray-300">Elemental Compatibility:</h4>
+                        <p class="mt-1 text-sm">${elementResult}</p>
+                    </div>
+                    <div class="p-4 bg-gray-900 rounded-lg">
+                        <h4 class="font-semibold text-gray-300">Quality Compatibility:</h4>
+                        <p class="mt-1 text-sm">${qualityResult}</p>
+                    </div>
+                    <div class="p-4 bg-gray-900 rounded-lg">
+                        <h4 class="font-semibold text-gray-300">Ruling Planet Influence:</h4>
+                        <p class="mt-1 text-sm">${rulingPlanetResult}</p>
+                    </div>
+                </div>
+            `;
+            compatibilityContainer.classList.remove('hidden');
+        }
+
+        document.getElementById('analyze-btn').addEventListener('click', () => {
+            const p1Name = document.getElementById('p1-name').value || 'Person 1';
+            const p1Dob = new Date(document.getElementById('p1-dob').value);
+
+            const p2Name = document.getElementById('p2-name').value;
+            const p2Dob = new Date(document.getElementById('p2-dob').value);
+
+            // Hide previous results
+            document.getElementById('results').classList.remove('hidden');
+            document.getElementById('p1-result').innerHTML = '';
+            document.getElementById('p2-result').innerHTML = '';
+            document.getElementById('compatibility-result').innerHTML = '';
+            document.getElementById('p2-result').classList.add('hidden');
+            document.getElementById('compatibility-result').classList.add('hidden');
+            
+            // Get zodiac signs
+            const p1Sign = getZodiacSign(p1Dob);
+            renderIndividualProfile(p1Name, p1Sign, 'p1-result');
+
+            if (p2Name && !isNaN(p2Dob.getTime())) {
+                const p2Sign = getZodiacSign(p2Dob);
+                document.getElementById('p2-result').classList.remove('hidden');
+                renderIndividualProfile(p2Name, p2Sign, 'p2-result');
+
+                if (p1Sign && p2Sign) {
+                    calculateCompatibility({name: p1Name, sign: p1Sign}, {name: p2Name, sign: p2Sign});
+                }
+            } else {
+                // If only one person's data is entered, show only their profile
+                document.getElementById('p2-result').classList.add('hidden');
+                document.getElementById('compatibility-result').classList.add('hidden');
+            }
+        });
+    </script>
+
+</body>
+</html>
